@@ -70,12 +70,20 @@ if (MSVC)
     file(GLOB MY_GDAL_DLLs   "${GDAL_INSTALL}/bin/*.dll")
     file(GLOB MY_SQLITE_DLLs "${SQLite3_INCLUDE_DIR}/../bin/*.dll")
 
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MY_PROJ_DB}     $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MY_PROJ_DLLs}   $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MY_GDAL_DLLs}   $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MY_SQLITE_DLLs} $<TARGET_FILE_DIR:${PROJECT_NAME}>
+    set(ALL_COPY_FILES
+        ${MY_PROJ_DB}
+        ${MY_PROJ_DLLs}
+        ${MY_GDAL_DLLs}
+        ${MY_SQLITE_DLLs}
     )
+
+    foreach(file ${ALL_COPY_FILES})
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${file}"
+                $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        )
+    endforeach()
 endif()
 
 include(GNUInstallDirs)
