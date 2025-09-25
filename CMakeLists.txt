@@ -78,11 +78,13 @@ if (MSVC)
     )
 
     foreach(file ${ALL_COPY_FILES})
-        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${file}"
-                $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        )
+        if(EXISTS "${file}")
+            add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different "${file}" "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
+            )
+        else()
+            message(FATAL_ERROR "File \"${file}\" does not exist. Something went wrong while building dependencies.")
+        endif()
     endforeach()
 endif()
 
